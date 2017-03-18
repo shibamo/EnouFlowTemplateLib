@@ -9,6 +9,7 @@ namespace EnouFlowTemplateLib
 {
   public static partial class FlowTemplateDBHelper
   {
+    #region FlowTemplate
     // Create FlowTemplate
     public static FlowTemplate createFlowTemplate()
     {
@@ -243,5 +244,176 @@ namespace EnouFlowTemplateLib
         return db.flowTemplates.ToList();
       }
     }
+    #endregion
+
+    #region FlowDynamicUser
+    public static Tuple<bool, FlowDynamicUser, List<string>> createFlowDynamicUser(
+      string guid, string name, string displayName, string script, string memo,
+      bool isPublished = false, bool isValidated = false)
+    {
+      List<string> errors = new List<string>();
+      var basicCheckResult = validateFlowDynamicUserBasic(
+        guid, name, displayName, script, memo, isPublished, isValidated);
+      if (basicCheckResult.Item1 == false)
+      {
+        return new Tuple<bool, FlowDynamicUser, List<string>>(
+          false, null, basicCheckResult.Item2);
+      }
+
+      bool result = true;
+
+      using (var db = new EnouFlowTemplateDbContext())
+      {
+        #region 创建流程动态用户的检查
+        if (db.flowDynamicUsers.ToList().Exists(
+          obj => obj.name == name))
+        {
+          result = false;
+          errors.Add(string.Format(
+            @"不能多次创建相同名称'{0}'的流程动态用户;",
+            name));
+        }
+
+        if (db.flowDynamicUsers.ToList().Exists(obj => obj.guid == guid))
+        {
+          result = false;
+          errors.Add(string.Format(
+            @"不能多次创建相同guid'{0}'的流程动态用户;", guid));
+        }
+        if (!result)
+        {
+          return new Tuple<bool, FlowDynamicUser, List<string>>
+            (false, null, errors);
+        }
+        #endregion
+
+        var flowDynamicUser = db.flowDynamicUsers.Create();
+        if (!string.IsNullOrWhiteSpace(guid))
+        { // 支持自动生成guid
+          flowDynamicUser.guid = guid;
+        }
+        flowDynamicUser.name = name;
+        flowDynamicUser.displayName = displayName;
+        flowDynamicUser.script = script;
+        flowDynamicUser.memo = memo;
+        flowDynamicUser.isPublished = isPublished;
+        flowDynamicUser.isValidated = isValidated;
+        db.flowDynamicUsers.Add(flowDynamicUser);
+        db.SaveChanges();
+        return new Tuple<bool, FlowDynamicUser, List<string>>(
+          true, flowDynamicUser, null);
+      }
+    }
+
+    public static Tuple<bool, FlowDynamicUser, List<string>> updateFlowDynamicUser(
+      string guid, string name, string displayName, string script, string memo,
+      bool isPublished = false, bool isValidated = false, bool forceChangeName = false)
+    {
+      List<string> errors = new List<string>();
+      var basicCheckResult = validateFlowDynamicUserBasic(
+        guid, name, displayName, script, memo ,isPublished, isValidated);
+      if (basicCheckResult.Item1 == false)
+      {
+        return new Tuple<bool, FlowDynamicUser, List<string>>(
+          false, null, basicCheckResult.Item2);
+      }
+      using (var db = new EnouFlowTemplateDbContext())
+      {
+        var flowDynamicUser = getFlowDynamicUser(guid);
+        #region 修改记录的检查
+        if (flowDynamicUser == null)
+        {
+          errors.Add("该流程动态用户在数据库中不存在,是否尚未在数据库中创建?");
+          return new Tuple<bool, FlowDynamicUser, List<string>>(
+            false, flowDynamicUser, errors);
+        }
+        if (flowDynamicUser.isPublished)
+        {
+          errors.Add("为不影响业务,不能直接更改已被发布的流程动态用户;");
+          return new Tuple<bool, FlowDynamicUser, List<string>>(
+            false, flowDynamicUser, errors);
+        }
+
+        if(!forceChangeName && flowDynamicUser.name != name)
+        {
+          errors.Add("如果需要对流程动态用户更名,需要指定forceChangeName参数为true;");
+          return new Tuple<bool, FlowDynamicUser, List<string>>(
+            false, flowDynamicUser, errors);
+        }
+        #endregion
+        flowDynamicUser.name = name;
+        flowDynamicUser.displayName = displayName;
+        flowDynamicUser.script = script;
+        flowDynamicUser.memo = memo;
+        flowDynamicUser.isPublished = isPublished;
+        flowDynamicUser.isValidated = isValidated;
+        db.SaveChanges();
+        return new Tuple<bool, FlowDynamicUser, List<string>>(
+          true, flowDynamicUser, null);
+      }
+    }
+
+    private static Tuple<bool, List<string>> validateFlowDynamicUserBasic(
+      string guid, string name, string displayName, string script, string memo,
+      bool isPublished = false, bool isValidated = false)
+    {
+      bool result = true;
+      List<string> errors = new List<string>();
+
+      if (string.IsNullOrWhiteSpace(name))
+      {
+        result = false;
+        errors.Add("流程动态用户name不能为空;");
+      }
+
+      if (string.IsNullOrWhiteSpace(script))
+      {
+        result = false;
+        errors.Add("流程动态用户script不能为空;");
+      }
+
+      return new Tuple<bool, List<string>>(result, errors);
+    }
+
+    // Query one 
+    public static FlowDynamicUser getFlowDynamicUser(int flowDynamicUserId)
+    {
+      using (var db = new EnouFlowTemplateDbContext())
+      {
+        return db.flowDynamicUsers.Find(flowDynamicUserId);
+      }
+    }
+
+    public static FlowDynamicUser getFlowDynamicUser(string flowDynamicUserGuid)
+    {
+      using (var db = new EnouFlowTemplateDbContext())
+      {
+        return db.flowDynamicUsers.Where(
+          obj => obj.guid == flowDynamicUserGuid).FirstOrDefault();
+      }
+    }
+
+    // Get list
+    public static List<FlowDynamicUser> getAllFlowDynamicUsers(
+      bool isPublished = false, bool isValidated = false)
+    {
+      using (var db = new EnouFlowTemplateDbContext())
+      {
+        var result = db.flowDynamicUsers.ToList();
+        #region 根据条件筛选
+        if (isPublished && result!=null && result.Count()>0)
+        {
+          result = result.Where(obj => obj.isPublished).ToList();
+        }
+        if (isValidated && result != null && result.Count() > 0)
+        {
+          result = result.Where(obj => obj.isValidated).ToList();
+        }
+        #endregion
+        return result;
+      }
+    }
+
+    #endregion
   }
 }
