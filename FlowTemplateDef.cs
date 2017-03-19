@@ -81,7 +81,7 @@ namespace EnouFlowTemplateLib
 
   public class Paticipant
   {
-    public string PaticipantType { get; set; } //"role" or "user"
+    public string PaticipantType { get; set; } //"role" or "user" or "dynamic"
     public PaticipantDigest PaticipantObj { get; set; }
 
     public Paticipant(string paticipantType, PaticipantDigest paticipantObj)
@@ -116,13 +116,16 @@ namespace EnouFlowTemplateLib
     public string guid { get; set; }
     public int? userId { get; set; }
     public int? roleId { get; set; }
+    public int? flowDynamicUserId { get; set; }
 
-    public PaticipantDigest(string name, string guid, int? userId, int? roleId)
+    public PaticipantDigest(string name, string guid, 
+      int? userId, int? roleId, int? flowDynamicUserId)
     {
       this.name = name;
       this.guid = guid;
       this.userId = userId;
       this.roleId = roleId;
+      this.flowDynamicUserId = flowDynamicUserId;
     }
   }
 

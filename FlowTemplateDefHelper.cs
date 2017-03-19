@@ -80,6 +80,7 @@ namespace EnouFlowTemplateLib
               user.name,
               user.guid,
               user.userId,
+              null,
               null
             )
           );
@@ -94,7 +95,8 @@ namespace EnouFlowTemplateLib
                 role.name,
                 role.guid,
                 null,
-                role.roleId
+                role.roleId,
+                null
               )
             );
           }
