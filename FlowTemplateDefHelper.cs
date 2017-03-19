@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using EnouFlowOrgMgmtLib;
+using EnouFlowTemplateLib;
 
 namespace EnouFlowTemplateLib
 {
@@ -58,7 +59,8 @@ namespace EnouFlowTemplateLib
       {
         paticipants.ForEach(p =>
         {
-          if (p != null) { 
+          if (p != null)
+          {
             result.AddRange(p.resolveToUserDTOs());
           }
         });
@@ -72,6 +74,7 @@ namespace EnouFlowTemplateLib
     {
       using (EnouFlowOrgMgmtContext db = new EnouFlowOrgMgmtContext())
       {
+        #region 如果为用户
         var user = OrgMgmtDBHelper.getUser(guid, db);
         if (user != null)
         {
@@ -85,22 +88,43 @@ namespace EnouFlowTemplateLib
             )
           );
         }
-        else
+        #endregion
+
+        #region 如果为角色
+        var role = OrgMgmtDBHelper.getRole(guid, db);
+        if (role != null)
         {
-          var role = OrgMgmtDBHelper.getRole(guid, db);
-          if (role != null)
-          { 
-            return new Paticipant("role",
+          return new Paticipant("role",
+            new PaticipantDigest(
+              role.name,
+              role.guid,
+              null,
+              role.roleId,
+              null
+            )
+          );
+        }
+        #endregion
+
+        #region 如果为流程动态用户
+        using (var flowTemplateDb = new EnouFlowTemplateDbContext())
+        {
+          var flowDynamicUser = flowTemplateDb.flowDynamicUsers.Where(
+            obj => obj.guid == guid).FirstOrDefault();
+          if (flowDynamicUser != null)
+          {
+            return new Paticipant("dynamic",
               new PaticipantDigest(
-                role.name,
-                role.guid,
+                flowDynamicUser.name,
+                flowDynamicUser.guid,
                 null,
-                role.roleId,
-                null
+                null,
+                flowDynamicUser.flowDynamicUserId
               )
             );
           }
         }
+        #endregion
       }
       return null;
     }
