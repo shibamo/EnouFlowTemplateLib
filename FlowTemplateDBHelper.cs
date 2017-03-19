@@ -244,6 +244,16 @@ namespace EnouFlowTemplateLib
         return db.flowTemplates.ToList();
       }
     }
+
+    public static void togglePublishOfFlowTemplate(int flowTemplateId)
+    {
+      using (var db = new EnouFlowTemplateDbContext())
+      {
+        var tpl = db.flowTemplates.Find(flowTemplateId);
+        tpl.isPublished = !tpl.isPublished;
+        db.SaveChanges();
+      }
+    }
     #endregion
 
     #region FlowDynamicUser
