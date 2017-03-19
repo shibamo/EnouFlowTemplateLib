@@ -319,7 +319,9 @@ namespace EnouFlowTemplateLib
       }
       using (var db = new EnouFlowTemplateDbContext())
       {
-        var flowDynamicUser = getFlowDynamicUser(guid);
+        var flowDynamicUser = db.flowDynamicUsers.Where(
+          obj => obj.guid == guid).FirstOrDefault();
+
         #region 修改记录的检查
         if (flowDynamicUser == null)
         {
@@ -348,6 +350,7 @@ namespace EnouFlowTemplateLib
         flowDynamicUser.isPublished = isPublished;
         flowDynamicUser.isValidated = isValidated;
         db.SaveChanges();
+
         return new Tuple<bool, FlowDynamicUser, List<string>>(
           true, flowDynamicUser, null);
       }
