@@ -39,9 +39,8 @@ namespace EnouFlowTemplateLib
 
     public List<ActivityNode> getNodesOfStartType()
     {
-      return def.activityNodes.nodes.Where(
-        node => node.type == ActivityTypeString.standard_Start)
-        .ToList();
+      return def.activityNodes.nodes.Where(node => 
+        node.type == ActivityTypeString.standard_Start).ToList();
     }
 
     public List<ActivityConnection> getOutboundConnectionsOfNode(ActivityNode node)
