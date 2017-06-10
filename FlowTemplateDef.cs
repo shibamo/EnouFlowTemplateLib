@@ -92,12 +92,15 @@ namespace EnouFlowTemplateLib
 
     public List<UserDTO> resolveToUserDTOs()
     {
-      if (PaticipantType != "role") // should be "user" then
+#warning need add the dynamic scenario
+      if (PaticipantType == "user")
       {
         var result = new List<UserDTO>();
         using (var db = new EnouFlowOrgMgmtContext())
         {
-          result.Add(OrgMgmtDBHelper.getUserDTO((int)PaticipantObj.userId, db));
+          result.Add(
+            new UserHelper(db).getUserDTO((int)
+              PaticipantObj.userId));
         }
 
         return result;
@@ -105,7 +108,7 @@ namespace EnouFlowTemplateLib
 
       using (var db = new EnouFlowOrgMgmtContext())
       {
-        return OrgMgmtDBHelper.getUserDTOsOfRole((int)PaticipantObj.roleId, db);
+        return new UserHelper(db).getUserDTOsOfRole((int)PaticipantObj.roleId);
       }
     }
   }

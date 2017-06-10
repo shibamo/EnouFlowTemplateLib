@@ -74,7 +74,7 @@ namespace EnouFlowTemplateLib
       using (EnouFlowOrgMgmtContext db = new EnouFlowOrgMgmtContext())
       {
         #region 如果为用户
-        var user = OrgMgmtDBHelper.getUser(guid, db);
+        var user = new UserHelper(db).getObject(guid);
         if (user != null)
         {
           return new Paticipant("user",
@@ -90,7 +90,7 @@ namespace EnouFlowTemplateLib
         #endregion
 
         #region 如果为角色
-        var role = OrgMgmtDBHelper.getRole(guid, db);
+        var role = new RoleHelper(db).getObject(guid);
         if (role != null)
         {
           return new Paticipant("role",
