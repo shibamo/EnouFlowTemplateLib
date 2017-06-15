@@ -49,26 +49,6 @@ namespace EnouFlowTemplateLib
         conn => conn.fromGuid == node.guid).ToList();
     }
 
-    public static List<UserDTO> getUserDTOsFromPaticipantList(
-      List<Paticipant> paticipants)
-    {
-      List<UserDTO> result = new List<UserDTO>();
-
-      if (paticipants?.Count() > 0)
-      {
-        paticipants.ForEach(p =>
-        {
-          if (p != null)
-          {
-            result.AddRange(p.resolveToUserDTOs());
-          }
-        });
-        result = result.Distinct().ToList();
-      }
-
-      return result;
-    }
-
     public static Paticipant getPaticipantFromGuid(string guid)
     {
       using (EnouFlowOrgMgmtContext db = new EnouFlowOrgMgmtContext())

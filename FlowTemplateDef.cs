@@ -89,28 +89,6 @@ namespace EnouFlowTemplateLib
       this.PaticipantType = paticipantType;
       this.PaticipantObj = paticipantObj;
     }
-
-    public List<UserDTO> resolveToUserDTOs()
-    {
-#warning need add the dynamic scenario
-      if (PaticipantType == "user")
-      {
-        var result = new List<UserDTO>();
-        using (var db = new EnouFlowOrgMgmtContext())
-        {
-          result.Add(
-            new UserHelper(db).getUserDTO((int)
-              PaticipantObj.userId));
-        }
-
-        return result;
-      }
-
-      using (var db = new EnouFlowOrgMgmtContext())
-      {
-        return new UserHelper(db).getUserDTOsOfRole((int)PaticipantObj.roleId);
-      }
-    }
   }
 
   public class PaticipantDigest
