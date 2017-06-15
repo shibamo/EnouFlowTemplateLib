@@ -49,9 +49,22 @@
       <HintPath>..\..\EnouFlowEngine\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\EnouFlowEngine\packages\NLog.4.0.0\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute, Version=2.0.3.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\..\EnouFlowEngine\packages\NSubstitute.2.0.3\lib\net45\NSubstitute.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\EnouFlowEngine\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,6 +81,8 @@
     <Compile Include="JsonHelper.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\Attributes\RollbackAttribute.cs" />
+    <Compile Include="Tests\Integration\Template_TestsI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -79,6 +94,9 @@
       <Project>{621d9756-6357-4602-9ac4-c9f27bdfd49e}</Project>
       <Name>EnouFlowOrgMgmtLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests\Unit\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
