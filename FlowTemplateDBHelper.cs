@@ -11,7 +11,7 @@ namespace EnouFlowTemplateLib
   {
     #region FlowTemplate
     // Create FlowTemplate
-    public static FlowTemplate createFlowTemplate()
+    public static FlowTemplate createBlankFlowTemplate()
     {
       using (var db = new EnouFlowTemplateDbContext())
       {
