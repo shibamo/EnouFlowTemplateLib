@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics.Contracts;
 
 using EnouFlowOrgMgmtLib;
 using EnouFlowTemplateLib;
@@ -13,10 +14,18 @@ namespace EnouFlowTemplateLib
   {
     public FlowTemplateDef def { get; set; }
 
+    internal static Dictionary<string, FlowTemplateDef> _defs = new Dictionary<string, FlowTemplateDef>();
+
     public FlowTemplateDefHelper(string json)
     {
-      def = JsonHelper.DeserializeJsonToObject<FlowTemplateDef>(
-          json);
+      Contract.Requires<DataLogicException>(json != null, "流程模板Json不能为空");
+
+      if (!_defs.ContainsKey(json))
+      {
+        _defs.Add(json, JsonHelper.DeserializeJsonToObject<FlowTemplateDef>(
+          json));
+      }
+      def = _defs[json];
     }
 
     private FlowTemplateDefHelper() { }
@@ -39,7 +48,7 @@ namespace EnouFlowTemplateLib
 
     public List<ActivityNode> getNodesOfStartType()
     {
-      return def.activityNodes.nodes.Where(node => 
+      return def.activityNodes.nodes.Where(node =>
         node.type == ActivityTypeString.standard_Start).ToList();
     }
 
